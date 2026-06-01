@@ -24,6 +24,9 @@
       text-align: center;
       box-shadow: 0 20px 60px rgba(0,0,0,0.2);
     }
+    .lang-toggle { text-align: right; font-size: 13px; color: #9CA3AF; margin-bottom: 8px; }
+    .lang-toggle span { cursor: pointer; padding: 2px 4px; }
+    .lang-toggle span.active { color: #5B4FE8; font-weight: 700; }
     .logo { font-size: 56px; margin-bottom: 8px; }
     h1 { font-size: 28px; font-weight: 800; color: #1A1A2E; margin-bottom: 6px; }
     .tagline { font-size: 15px; color: #6B7280; margin-bottom: 32px; line-height: 1.5; }
@@ -54,22 +57,10 @@
       transition: transform 0.1s, opacity 0.1s;
     }
     .btn:active { transform: scale(0.98); opacity: 0.9; }
-    .btn-android {
-      background: #5B4FE8;
-      color: white;
-    }
-    .btn-ios {
-      background: #1A1A2E;
-      color: white;
-    }
-    .btn-both {
-      display: none;
-    }
-    .separator {
-      font-size: 12px;
-      color: #9CA3AF;
-      margin-bottom: 12px;
-    }
+    .btn-android { background: #5B4FE8; color: white; }
+    .btn-ios { background: #1A1A2E; color: white; }
+    .btn-both { display: none; }
+    .separator { font-size: 12px; color: #9CA3AF; margin-bottom: 12px; }
     .free-badge {
       display: inline-block;
       background: #ECFDF5;
@@ -84,55 +75,89 @@
 </head>
 <body>
   <div class="card">
+    <div class="lang-toggle">
+      <span id="lang-fr" onclick="applyLang('fr')">FR</span>·<span id="lang-en" onclick="applyLang('en')">EN</span>
+    </div>
     <div class="logo">💧</div>
     <h1>Drip</h1>
-    <p class="tagline">Apprends goutte à goutte.<br>Une question par jour sur ce qui te passionne.</p>
+    <p class="tagline" id="tagline"></p>
 
     <div class="features">
-      <div class="feature">
-        <span class="feature-icon">🔔</span>
-        <span>Notifications à l'heure que tu choisis</span>
-      </div>
-      <div class="feature">
-        <span class="feature-icon">🎯</span>
-        <span>Répétition espacée intelligente</span>
-      </div>
-      <div class="feature">
-        <span class="feature-icon">📚</span>
-        <span>10 thèmes · 229 questions</span>
-      </div>
-      <div class="feature">
-        <span class="feature-icon">🌍</span>
-        <span>Capitales, Histoire, Art, Langues...</span>
-      </div>
+      <div class="feature"><span class="feature-icon">🔔</span><span id="f1"></span></div>
+      <div class="feature"><span class="feature-icon">🎯</span><span id="f2"></span></div>
+      <div class="feature"><span class="feature-icon">📚</span><span id="f3"></span></div>
+      <div class="feature"><span class="feature-icon">🌍</span><span id="f4"></span></div>
     </div>
 
-    <!-- Boutons affichés selon l'appareil via JS -->
-    <a href="https://play.google.com/store/apps/details?id=com.drip.quiz" class="btn btn-android" id="btn-android">
-      ▶ Télécharger sur Android
-    </a>
-    <a href="https://apps.apple.com/app/drip/id6773082591" class="btn btn-ios" id="btn-ios">
-       Télécharger sur iPhone
-    </a>
-    <!-- Fallback si aucun détecté -->
+    <a href="https://play.google.com/store/apps/details?id=com.drip.quiz" class="btn btn-android" id="btn-android"></a>
+    <a href="https://apps.apple.com/app/drip/id6773082591" class="btn btn-ios" id="btn-ios"></a>
+
     <div id="btn-both" class="btn-both">
-      <a href="https://play.google.com/store/apps/details?id=com.drip.quiz" class="btn btn-android">
-        ▶ Android
-      </a>
-      <p class="separator">ou</p>
-      <a href="https://apps.apple.com/app/drip/id6773082591" class="btn btn-ios">
-         iPhone
-      </a>
+      <a href="https://play.google.com/store/apps/details?id=com.drip.quiz" class="btn btn-android" id="btn-android-both"></a>
+      <p class="separator" id="sep"></p>
+      <a href="https://apps.apple.com/app/drip/id6773082591" class="btn btn-ios" id="btn-ios-both"></a>
     </div>
 
-    <span class="free-badge">✦ Gratuit</span>
+    <span class="free-badge" id="free"></span>
   </div>
 
   <script>
+    var T = {
+      fr: {
+        title: "Drip — Télécharger l'app",
+        tagline: "Apprends goutte à goutte.<br>Une question par jour sur ce qui te passionne.",
+        f1: "Notifications à l'heure que tu choisis",
+        f2: "Répétition espacée intelligente",
+        f3: "Des dizaines de thèmes, des centaines de questions",
+        f4: "Capitales, Histoire, Art, Langues...",
+        android: "▶ Télécharger sur Android",
+        ios: "Télécharger sur iPhone",
+        androidShort: "▶ Android",
+        iosShort: "iPhone",
+        or: "ou",
+        free: "✦ Gratuit"
+      },
+      en: {
+        title: "Drip — Download the app",
+        tagline: "Learn drop by drop.<br>One question a day about what you love.",
+        f1: "Notifications at a time you choose",
+        f2: "Smart spaced repetition",
+        f3: "Dozens of topics, hundreds of questions",
+        f4: "Capitals, History, Art, Languages...",
+        android: "▶ Download on Android",
+        ios: "Download on iPhone",
+        androidShort: "▶ Android",
+        iosShort: "iPhone",
+        or: "or",
+        free: "✦ Free"
+      }
+    };
+
+    function applyLang(l) {
+      var t = T[l];
+      document.documentElement.lang = l;
+      try { document.title = t.title; } catch (e) {}
+      document.getElementById('tagline').innerHTML = t.tagline;
+      document.getElementById('f1').textContent = t.f1;
+      document.getElementById('f2').textContent = t.f2;
+      document.getElementById('f3').textContent = t.f3;
+      document.getElementById('f4').textContent = t.f4;
+      document.getElementById('btn-android').textContent = t.android;
+      document.getElementById('btn-ios').textContent = t.ios;
+      document.getElementById('btn-android-both').textContent = t.androidShort;
+      document.getElementById('btn-ios-both').textContent = t.iosShort;
+      document.getElementById('sep').textContent = t.or;
+      document.getElementById('free').textContent = t.free;
+      document.getElementById('lang-fr').className = (l === 'fr') ? 'active' : '';
+      document.getElementById('lang-en').className = (l === 'en') ? 'active' : '';
+    }
+
+    var nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+    applyLang(nav.indexOf('fr') === 0 ? 'fr' : 'en');
+
     var ua = navigator.userAgent || navigator.vendor || window.opera;
     var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
     var isAndroid = /android/i.test(ua);
-
     var btnAndroid = document.getElementById('btn-android');
     var btnIOS = document.getElementById('btn-ios');
     var btnBoth = document.getElementById('btn-both');
@@ -140,19 +165,12 @@
     if (isIOS) {
       btnAndroid.style.display = 'none';
       btnIOS.style.display = 'block';
-      // Redirection automatique après 1.5s
-      setTimeout(function() {
-        window.location.href = 'https://apps.apple.com/app/drip/id6773082591';
-      }, 1500);
+      setTimeout(function () { window.location.href = 'https://apps.apple.com/app/drip/id6773082591'; }, 1500);
     } else if (isAndroid) {
       btnAndroid.style.display = 'block';
       btnIOS.style.display = 'none';
-      // Redirection automatique après 1.5s
-      setTimeout(function() {
-        window.location.href = 'https://play.google.com/store/apps/details?id=com.drip.quiz';
-      }, 1500);
+      setTimeout(function () { window.location.href = 'https://play.google.com/store/apps/details?id=com.drip.quiz'; }, 1500);
     } else {
-      // Desktop ou autre : afficher les deux
       btnAndroid.style.display = 'none';
       btnIOS.style.display = 'none';
       btnBoth.style.display = 'block';
